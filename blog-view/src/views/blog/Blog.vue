@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div :class="{'fullscreen-container': isFullscreen}">
 		<div class="ui padded attached segment m-padded-tb-large">
 			<div class="ui large red right corner label" v-if="blog.top">
 				<i class="arrow alternate circle up icon"></i>
@@ -35,6 +35,12 @@
 									<i class="book icon"></i>
 								</div>
 							</a>
+              <a class="item m-common-black" @click.prevent="toggleFullscreen">
+                <div data-inverted="" data-tooltip="全屏模式" data-position="top center">
+                  <i class="expand arrows alternate icon" v-if="!isFullscreen"></i>
+                  <i class="compress arrows alternate icon" v-else></i>
+                </div>
+              </a>
 						</div>
 					</div>
 					<!--分类-->
@@ -108,7 +114,8 @@
 				bigFontSize: false,
         isZoomed: false,
         zoomedImage: null,
-        scrollTimeout: null
+        scrollTimeout: null,
+        isFullscreen: false
 			}
 		},
 		computed: {
@@ -254,6 +261,21 @@
             img.addEventListener('click', this.handleImageZoom);
           });
         }
+      },
+      toggleFullscreen() {
+        this.isFullscreen = !this.isFullscreen;
+        if (this.isFullscreen) {
+          document.body.style.overflow = 'hidden';
+          // 滚动到顶部
+          window.scrollTo(0, 0);
+        } else {
+          document.body.style.overflow = 'auto';
+        }
+      },
+      handleKeydown(event) {
+        if (event.key === 'Escape' && this.isFullscreen) {
+          this.toggleFullscreen();
+        }
       }
 		},
     mounted() {
@@ -262,8 +284,10 @@
         this.setupImageHandling();
       });
 
-      // Add scroll event listener
       window.addEventListener('scroll', this.handleScroll);
+
+      // 新增 ESC 键监听
+      window.addEventListener('keydown', this.handleKeydown);
     },
     updated() {
       // Refresh image handling when content updates
@@ -272,6 +296,12 @@
       });
     },
     beforeDestroy() {
+
+      // 清理全屏状态
+      if (this.isFullscreen) {
+        document.body.style.overflow = 'auto';
+      }
+
       // Clean up
       window.removeEventListener('scroll', this.handleScroll);
 
@@ -331,5 +361,103 @@
   .typo img.zoomed {
     user-select: none;
     -webkit-user-select: none;
+  }
+
+  /* 全屏模式样式 */
+  .fullscreen-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    overflow-y: auto;
+    z-index: 9999;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  /* 全屏模式下的内容容器 */
+  .fullscreen-container .ui.padded.attached.segment {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+    max-width: 1000px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  /* 标题美化 */
+  .fullscreen-container h2.ui.header {
+    background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  /* 文章内容区域美化 */
+  .fullscreen-container .typo {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    padding: 2rem;
+    line-height: 1.8;
+    font-size: 16px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  /* 按钮组美化 */
+  .fullscreen-container .ui.horizontal.link.list .item {
+    transition: all 0.3s ease;
+  }
+
+  .fullscreen-container .ui.horizontal.link.list .item:hover {
+    transform: translateY(-2px);
+    color: #667eea !important;
+  }
+
+  /* 标签美化 */
+  .fullscreen-container .ui.tag.label {
+    transition: all 0.3s ease;
+    margin: 0.2em;
+  }
+
+  .fullscreen-container .ui.tag.label:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  }
+
+  /* 滚动条美化（webkit浏览器） */
+  .fullscreen-container::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .fullscreen-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+  }
+
+  .fullscreen-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    border-radius: 4px;
+  }
+
+  .fullscreen-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, #764ba2, #667eea);
+  }
+
+  /* 响应式调整 */
+  @media (max-width: 768px) {
+    .fullscreen-container {
+      padding: 10px;
+    }
+
+    .fullscreen-container .typo {
+      padding: 1rem;
+      font-size: 14px;
+    }
   }
 </style>
