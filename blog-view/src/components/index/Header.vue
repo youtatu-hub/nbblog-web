@@ -80,6 +80,8 @@
 	header {
 		--percentage: 0.5;
 		user-select: none;
+		z-index: 10;
+		position: relative;
 	}
 
 	.view {

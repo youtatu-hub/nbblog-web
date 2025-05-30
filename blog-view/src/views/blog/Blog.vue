@@ -80,6 +80,22 @@
 				</div>
 			</div>
 		</div>
+    <!-- 全屏模式下的目录 -->
+		<div class="fullscreen-toc" v-if="isFullscreen" :class="{'toc-hidden': isTocHidden}">
+			<div class="toc-toggle" @click="toggleToc">
+				<i :class="isTocHidden ? 'angle double right icon' : 'angle double left icon'"></i>
+			</div>
+			<div class="toc-content">
+				<div class="ui segments m-toc toc-wrapper m-box">
+					<div class="ui secondary segment">
+						<i class="list ul icon"></i>本文目录
+					</div>
+					<div class="ui yellow segment">
+						<div class="js-toc-fullscreen"></div>
+					</div>
+				</div>
+			</div>
+		</div>
 		<!--博客信息-->
 		<div class="ui attached positive message">
 			<ul class="list">
@@ -115,7 +131,8 @@
         isZoomed: false,
         zoomedImage: null,
         scrollTimeout: null,
-        isFullscreen: false
+        isFullscreen: false,
+        isTocHidden: false
 			}
 		},
 		computed: {
@@ -268,14 +285,46 @@
           document.body.style.overflow = 'hidden';
           // 滚动到顶部
           window.scrollTo(0, 0);
+          // 初始化全屏模式下的目录
+          this.$nextTick(() => {
+            this.initFullscreenTocbot();
+            // 恢复上次的目录显示状态
+            const savedTocHidden = localStorage.getItem('tocHidden');
+            if (savedTocHidden !== null) {
+              this.isTocHidden = savedTocHidden === 'true';
+            }
+          });
         } else {
           document.body.style.overflow = 'auto';
+          // 保存目录显示状态
+          localStorage.setItem('tocHidden', this.isTocHidden);
+          // 销毁全屏模式下的目录
+          tocbot.destroy();
+          // 重新初始化正常模式下的目录
+          this.$nextTick(() => {
+            this.initNormalTocbot();
+          });
         }
       },
-      handleKeydown(event) {
-        if (event.key === 'Escape' && this.isFullscreen) {
-          this.toggleFullscreen();
-        }
+      toggleToc() {
+        this.isTocHidden = !this.isTocHidden;
+        // 保存目录显示状态
+        localStorage.setItem('tocHidden', this.isTocHidden);
+      },
+      initFullscreenTocbot() {
+        tocbot.init({
+          tocSelector: '.js-toc-fullscreen',
+          contentSelector: '.js-toc-content',
+          headingSelector: 'h1,h2,h3,h4',
+          scrollSmooth: true,
+          scrollSmoothDuration: 420,
+          scrollSmoothOffset: -55,
+          headingsOffset: -18
+        });
+      },
+      initNormalTocbot() {
+        // 触发 Tocbot 组件重新初始化
+        this.$store.commit(SET_IS_BLOG_RENDER_COMPLETE, true);
       }
 		},
     mounted() {
@@ -384,69 +433,15 @@
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     margin: 0 auto;
-    max-width: 1000px;
+    width: 100vw;
     border: 1px solid rgba(255, 255, 255, 0.2);
-  }
-
-  /* 标题美化 */
-  .fullscreen-container h2.ui.header {
-    background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-
-  /* 文章内容区域美化 */
-  .fullscreen-container .typo {
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 10px;
-    padding: 2rem;
-    line-height: 1.8;
-    font-size: 16px;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
-  }
-
-  /* 按钮组美化 */
-  .fullscreen-container .ui.horizontal.link.list .item {
     transition: all 0.3s ease;
   }
 
-  .fullscreen-container .ui.horizontal.link.list .item:hover {
-    transform: translateY(-2px);
-    color: #667eea !important;
-  }
-
-  /* 标签美化 */
-  .fullscreen-container .ui.tag.label {
-    transition: all 0.3s ease;
-    margin: 0.2em;
-  }
-
-  .fullscreen-container .ui.tag.label:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-  }
-
-  /* 滚动条美化（webkit浏览器） */
-  .fullscreen-container::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  .fullscreen-container::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-  }
-
-  .fullscreen-container::-webkit-scrollbar-thumb {
-    background: linear-gradient(45deg, #667eea, #764ba2);
-    border-radius: 4px;
-  }
-
-  .fullscreen-container::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(45deg, #764ba2, #667eea);
+  /* 目录隐藏时文章内容全屏 */
+  .fullscreen-container .fullscreen-toc.toc-hidden + .ui.padded.attached.segment {
+    width: 100vw;
+    margin-left: 0;
   }
 
   /* 响应式调整 */
@@ -459,5 +454,43 @@
       padding: 1rem;
       font-size: 14px;
     }
+  }
+
+  /* 全屏模式下的目录样式 */
+  .fullscreen-toc {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 300px;
+    height: calc(100vh - 60px);
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+    z-index: 10000;
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+    padding: 20px;
+    box-sizing: border-box;
+    border-radius: 0 10px 10px 0;
+  }
+
+  .fullscreen-toc.toc-hidden {
+    transform: translateX(-290px);
+  }
+
+  .toc-toggle {
+    position: absolute;
+    top: 50%;
+    right: 0; /* 改为右侧 */
+    width: 20px;
+    height: 50px;
+    background: #08cafb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 0 5px 5px 0; /* 修改圆角位置 */
+    transform: translateY(-50%);
+    color: white;
+    font-size: 16px;
   }
 </style>

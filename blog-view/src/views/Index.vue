@@ -140,11 +140,13 @@
 		display: flex;
 		min-height: 100vh; /* 没有元素时，也把页面撑开至100% */
 		flex-direction: column;
+		overflow-y: auto;
 	}
 
 	.main {
 		margin-top: 40px;
 		flex: 1;
+		overflow-y: visible;
 	}
 
 	.main .ui.container {

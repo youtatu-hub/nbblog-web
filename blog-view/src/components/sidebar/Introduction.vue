@@ -133,9 +133,7 @@
 		text-overflow: ellipsis;
 		overflow: hidden;
 	}
-</style>
 
-<style>
 	.el-collapse-item {
 		padding-left: 15px;
 		padding-right: 15px;
@@ -143,5 +141,14 @@
 
 	.el-collapse-item .el-collapse-item__content {
 		padding-bottom: 10px;
+	}
+
+	.ui.segments.m-box {
+		width: 300px;
+		padding: 5px;
+		margin: 0;
+		background-color: transparent;
+		border: none;
+		box-shadow: none;
 	}
 </style>
