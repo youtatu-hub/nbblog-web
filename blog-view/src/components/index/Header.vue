@@ -91,6 +91,7 @@
 		display: flex;
 		justify-content: center;
 		transform: translatex(calc(var(--percentage) * 100px));
+		width: 100%;
 	}
 
 	.view div {

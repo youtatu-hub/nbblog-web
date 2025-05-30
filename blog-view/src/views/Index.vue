@@ -148,9 +148,12 @@
 	}
 
 	.main .ui.container {
-		width: 1400px !important;
-		margin-left: auto !important;
-		margin-right: auto !important;
+		width: 100% !important;
+		max-width: 100% !important;
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+		padding-left: 20px !important;
+		padding-right: 20px !important;
 	}
 
 	.ui.grid .three.column {
