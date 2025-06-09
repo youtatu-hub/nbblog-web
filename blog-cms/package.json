@@ -2,7 +2,7 @@
   "name": "blog-cms",
   "version": "2.0.0",
   "description": "NBlog cms",
-  "author": "Youta <i@youtatu.us.kg>",
+  "author": "Youta <i@youta.us.kg>",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

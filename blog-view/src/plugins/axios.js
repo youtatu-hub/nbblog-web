@@ -7,6 +7,11 @@ const request = axios.create({
 	timeout: 10000,
 })
 
+/*const request = axios.create({
+	baseURL: '/api',
+	timeout: 10000,
+})*/
+
 // 请求拦截
 request.interceptors.request.use(
 	config => {
