@@ -63,7 +63,7 @@
 	import Tags from "@/components/sidebar/Tags";
 	import RandomBlog from "@/components/sidebar/RandomBlog";
 	import Tocbot from "@/components/sidebar/Tocbot";
-  import CategoryToc from "@/components/sidebar/CategoryToc";
+    import CategoryToc from "@/components/sidebar/CategoryToc";
 	import BlogPasswordDialog from "@/components/index/BlogPasswordDialog";
 	import {mapState} from 'vuex'
 	import {SAVE_CLIENT_SIZE, SAVE_INTRODUCTION, SAVE_SITE_INFO, RESTORE_COMMENT_FORM} from "@/store/mutations-types";
