@@ -46,8 +46,10 @@
 			<meting-js :server="siteInfo.playlistServer" :id="siteInfo.playlistId" type="playlist" fixed="true" theme="#25CCF7" v-if="siteInfo.playlistServer && siteInfo.playlistId"></meting-js>
 		</div>
 		<!--回到顶部-->
-		<el-backtop style="box-shadow: none;background: none;z-index: 9999;">
-			<img src="/img/paper-plane.png" style="width: 40px;height: 40px;">
+		<el-backtop :bottom="50" :right="50">
+			<div style="width: 40px;height: 40px;background-color: rgba(255,255,255,0.9);border-radius: 50%;display: flex;align-items: center;justify-content: center;box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);">
+				<img src="/img/paper-plane.png" style="width: 24px;height: 24px;">
+			</div>
 		</el-backtop>
 		<!--底部footer-->
 		<Footer :siteInfo="siteInfo" :badges="badges" :newBlogList="newBlogList" :hitokoto="hitokoto"/>
