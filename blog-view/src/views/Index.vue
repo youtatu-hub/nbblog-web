@@ -46,11 +46,9 @@
 			<meting-js :server="siteInfo.playlistServer" :id="siteInfo.playlistId" type="playlist" fixed="true" theme="#25CCF7" v-if="siteInfo.playlistServer && siteInfo.playlistId"></meting-js>
 		</div>
 		<!--回到顶部-->
-		<el-backtop :bottom="50" :right="50">
-			<div style="width: 40px;height: 40px;background-color: rgba(255,255,255,0.9);border-radius: 50%;display: flex;align-items: center;justify-content: center;box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);">
-				<img src="/img/paper-plane.png" style="width: 24px;height: 24px;">
-			</div>
-		</el-backtop>
+		<div v-show="showBackTop" style="position: fixed;bottom: 50px;right: 50px;width: 40px;height: 40px;background-color: rgba(255,255,255,0.9);border-radius: 50%;display: flex;align-items: center;justify-content: center;box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);z-index: 9999;cursor: pointer;" @click="backToTop">
+			<img src="/img/paper-plane.png" style="width: 24px;height: 24px;">
+		</div>
 		<!--底部footer-->
 		<Footer :siteInfo="siteInfo" :badges="badges" :newBlogList="newBlogList" :hitokoto="hitokoto"/>
 	</div>
@@ -87,6 +85,7 @@
 				badges: [],
 				newBlogList: [],
 				hitokoto: {},
+				showBackTop: false
 			}
 		},
 		computed: {
@@ -110,6 +109,18 @@
 			window.onresize = () => {
 				this.$store.commit(SAVE_CLIENT_SIZE, {clientHeight: document.body.clientHeight, clientWidth: document.body.clientWidth})
 			}
+
+			// 监听滚动事件
+			const siteEl = document.querySelector('.site')
+			if (siteEl) {
+				siteEl.addEventListener('scroll', this.handleScroll)
+			}
+		},
+		beforeDestroy() {
+			const siteEl = document.querySelector('.site')
+			if (siteEl) {
+				siteEl.removeEventListener('scroll', this.handleScroll)
+			}
 		},
 		methods: {
 			getSite() {
@@ -132,6 +143,16 @@
 				getHitokoto().then(res => {
 					this.hitokoto = res
 				})
+			},
+			backToTop() {
+				const siteEl = document.querySelector('.site')
+				if (siteEl) {
+					siteEl.scrollTo({top: 0, behavior: 'smooth'})
+				}
+			},
+			handleScroll() {
+				const siteEl = document.querySelector('.site')
+				this.showBackTop = siteEl && siteEl.scrollTop > 200
 			}
 		}
 	}
@@ -140,7 +161,7 @@
 <style scoped>
 	.site {
 		display: flex;
-		min-height: 100vh; /* 没有元素时，也把页面撑开至100% */
+		height: 100vh;
 		flex-direction: column;
 		overflow-y: auto;
 	}

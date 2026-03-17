@@ -35,7 +35,11 @@
 		},
 		methods: {
 			initTocbot() {
-				tocbot.init({
+				if (typeof window.tocbot === 'undefined') {
+					console.warn('tocbot is not loaded yet')
+					return
+				}
+				window.tocbot.init({
 					// Where to render the table of contents.
 					tocSelector: '.js-toc',
 					// Where to grab the headings to build the table of contents.
