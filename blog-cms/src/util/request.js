@@ -3,15 +3,15 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import {Message} from 'element-ui'
 
-const request = axios.create({
+/*const request = axios.create({
 	baseURL: 'http://localhost:8090/admin',
 	timeout: 5000
-})
+})*/
 
-/*const request = axios.create({
+const request = axios.create({
 	baseURL: '/api/admin/',
 	timeout: 5000
-})*/
+})
 
 
 let CancelToken = axios.CancelToken
